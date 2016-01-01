@@ -11,6 +11,11 @@ What it isn't
 
 Saxaphone isn't recommended as your general-purpose XML parser.  It's good for quickly extracting small bits of data from a large xml document.
 
+Compatibility
+==============
+
+Saxophone is tested against Python 2.7 and 3.5
+
 Basic Usage
 ======
 

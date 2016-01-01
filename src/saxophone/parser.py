@@ -1,9 +1,10 @@
 from copy import copy
 import re
+import six
 from xml.sax.handler import ContentHandler
 from xml import sax
 
-from saxophone.rules import AndRule, AttrRule, RegexAttrRule, NameRule, HasAttrRule
+import saxophone.rules
 from saxophone.rulechain import RuleChain, SaveRule
 
 
@@ -31,14 +32,14 @@ class Parser(ContentHandler):
         """
         Match by tag type (name)
         """
-        self.current_rule_chain().add(NameRule(name))
+        self.current_rule_chain().add(saxophone.rules.NameRule(name))
         return self
 
     def attr(self, key, value):
         """
         Match by attribute value
         """
-        self.current_rule_chain().add(AttrRule(key, value))
+        self.current_rule_chain().add(saxophone.rules.AttrRule(key, value))
         return self
 
     def regex_attr(self, key, value):
@@ -46,21 +47,22 @@ class Parser(ContentHandler):
         Regular expression matcher for attributes.  Both
         the attribute name and value are regex matches.
         """
-        self.current_rule_chain().add(RegexAttrRule(key, value))
+        self.current_rule_chain().add(
+            saxophone.rules.RegexAttrRule(key, value))
         return self
 
     def hasattr(self, key):
         """
         Match by existence of attribute
         """
-        self.current_rule_chain().add(HasAttrRule(key))
+        self.current_rule_chain().add(saxophone.rules.HasAttrRule(key))
         return self
 
     def id(self, value):
         """
         Find tag by id
         """
-        self.current_rule_chain().add(AttrRule("id", value))
+        self.current_rule_chain().add(saxophone.rules.AttrRule("id", value))
         return self
 
     def combine(self, *rules):
@@ -69,7 +71,7 @@ class Parser(ContentHandler):
         a keyword it tends to confuse syntax highlighters and
         such.
         """
-        self.current_rule_chain().add(AndRule(*rules))
+        self.current_rule_chain().add(saxophone.rules.AndRule(*rules))
         return self
 
     def save(self):
@@ -83,7 +85,7 @@ class Parser(ContentHandler):
             sax.parseString(self._fp, self)
         if len(self._rule_chains) == 1:
             return self._current_rule_chain.results
-        return {k: v.results for k, v in self._rule_chains.iteritems()}
+        return {k: v.results for k, v in six.iteritems(self._rule_chains)}
 
     def current_rule_chain(self):
         if self._current_rule_chain is None:

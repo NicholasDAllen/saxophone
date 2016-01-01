@@ -1,3 +1,4 @@
+import six
 
 import re
 
@@ -22,7 +23,7 @@ class RegexAttrRule(object):
         self.value = re.compile(value)
 
     def match(self, tag):
-        for key, value in tag['attrs'].iteritems():
+        for key, value in six.iteritems(tag['attrs']):
             if self.key.match(key) and self.value.match(value):
                 return True
         return False
